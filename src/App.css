@@ -1,0 +1,33 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.board {
+  padding: 6px;
+  margin: 0px;
+  background: #ffffff;
+  line-height: 0;
+}
+
+.node {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  outline: 0.5px solid #374151;
+  transition: all 0.3s linear;
+}
+
+.start {
+  background-color: rgb(220, 38, 38, 0.8);
+}
+
+.end {
+  background-color: rgb(16, 185, 129, 0.8);
+}
+
+.block {
+  background-color: #292524;
+}
