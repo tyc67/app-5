@@ -26,25 +26,33 @@ const getNeighbors = (node: Node, grid: Node[][]) => {
   return neighbors
 }
 
-export default function DFS(nodes: Node[][], startNode: Node, endNode: Node) {
-  const stack: Node[] = []
+export default function BFS(nodes: Node[][], startNode: Node, endNode: Node) {
+  const queue: Node[] = []
   const visitedNodes = []
   const shortestPath: Node[] = []
-  stack.push(startNode)
-  while (stack.length > 0) {
-    const currentNode = stack.pop()
+
+  queue.push(startNode)
+  while (queue.length > 0) {
+    const currentNode = queue.shift()
     if (currentNode) {
       currentNode.isVisited = true
       visitedNodes.push(currentNode)
       if (currentNode === endNode) {
+        let pathNode = endNode
+        shortestPath.push(endNode)
+        while (pathNode !== startNode) {
+          pathNode = pathNode.previousNode as Node
+          shortestPath.unshift(pathNode)
+        }
+
         return { visitedNodes, shortestPath }
       }
 
       const neighbors = getNeighbors(currentNode, nodes)
       for (const neighbor of neighbors) {
-        if (!neighbor.isVisited) {
-          stack.push(neighbor)
-        } else {
+        if (!neighbor.isVisited && !queue.includes(neighbor)) {
+          queue.push(neighbor)
+          neighbor.distance = currentNode.distance + 1
           neighbor.previousNode = currentNode
         }
       }

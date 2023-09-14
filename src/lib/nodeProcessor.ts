@@ -5,6 +5,7 @@ export interface Node {
   isEnd: boolean
   isBlock: boolean
   isVisited: boolean
+  distance: number
   previousNode: unknown
 }
 
@@ -21,6 +22,7 @@ export const getNode = (
   isEnd: row === endIndex[0] && col === endIndex[1],
   isBlock,
   isVisited: false,
+  distance: 0,
   previousNode: null,
 })
 

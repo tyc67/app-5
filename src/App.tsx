@@ -1,53 +1,74 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import { getGrid, getNodeClassName, type Node } from './lib/nodeProcessor'
 import './App.css'
 import DFS from './lib/dfs'
+import BFS from './lib/bfs'
+import { animateNodes, resetAnimate, type VisualizedNode } from './lib/animation'
 
 function App() {
   const rowLength = 30
   const colLength = 40
-  const [nodes, setNodes] = useState<Node[][] | []>([])
+  const isRandomBlock = true
   const [startIndex, setStartIndex] = useState<number[]>([0, 0])
   const [endIndex, setEndIndex] = useState<number[]>([rowLength - 1, colLength - 1])
-  const [isRandomBlock, setIsRandomBlock] = useState<boolean>(true)
+  const initialNodes = getGrid(rowLength, colLength, isRandomBlock, startIndex, endIndex)
+  const [nodes, setNodes] = useState<Node[][]>(initialNodes)
+  const initialVisualizedNode = { visitedNodes: [], shortestPath: [] }
+  const [visualizedNode, setVisualizedNode] = useState<VisualizedNode>(initialVisualizedNode)
 
   useEffect(() => {
-    setNodes(getGrid(rowLength, colLength, isRandomBlock, startIndex, endIndex))
-  }, [])
-
-  console.log(nodes)
+    animateNodes(visualizedNode)
+  }, [visualizedNode, visualizedNode.shortestPath, visualizedNode.visitedNodes])
 
   const handleMouseDown = (selectRow: number, selectCol: number) => {
-    // console.log(selectRow, selectCol)
     const updatedNodes = [...nodes]
-    updatedNodes[selectRow][selectCol].isBlock = true
+    updatedNodes[selectRow][selectCol].isBlock = !updatedNodes[selectRow][selectCol].isBlock
     setNodes(updatedNodes)
   }
 
-  const visualizedPath = () => {
+  const findPath = (method: string) => {
     const startNode = nodes[startIndex[0]][startIndex[1]]
     const endNode = nodes[endIndex[0]][endIndex[1]]
-    const visitedNodes = DFS(nodes, startNode, endNode)
-
-    visitedNodes.forEach((node, i) => {
-      if (node.isStart || node.isEnd) {
-        return
-      }
-      setTimeout(() => {
-        const element = document.getElementById(`node-${node.row}-${node.col}`)
-        if (element) {
-          element.classList.add('visited')
-        }
-      }, 20 * i)
-    })
+    let result: VisualizedNode
+    switch (method) {
+      case 'dfs':
+        result = DFS(nodes, startNode, endNode)
+        break
+      case 'bfs':
+        result = BFS(nodes, startNode, endNode)
+        break
+      default:
+        result = initialVisualizedNode
+    }
+    setVisualizedNode(result)
   }
+
+  const resetNode = () => {
+    const newStartIndex = [Math.floor(Math.random() * rowLength), Math.floor(Math.random() * colLength)]
+    const newEndIndex = [Math.floor(Math.random() * rowLength), Math.floor(Math.random() * colLength)]
+    const newNodes = getGrid(rowLength, colLength, isRandomBlock, newStartIndex, newEndIndex)
+
+    setStartIndex(newStartIndex)
+    setEndIndex(newEndIndex)
+    setNodes(newNodes)
+    resetAnimate(visualizedNode)
+    setVisualizedNode(initialVisualizedNode)
+    //TODO: need fix reset visualize bugs
+  }
+
+  console.log(nodes)
+  console.log(visualizedNode)
 
   return (
     <>
-      <button onClick={() => visualizedPath()} type="button">
+      <button onClick={() => findPath('dfs')} type="button">
         DFS GO
+      </button>
+      <button onClick={() => findPath('bfs')} type="button">
+        BFS GO
+      </button>
+      <button onClick={() => resetNode()} type="button">
+        Reset
       </button>
       <div className="board">
         {nodes.map((row, idx) => (
