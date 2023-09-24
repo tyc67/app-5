@@ -22,7 +22,7 @@ export const getNode = (
   isEnd: row === endIndex[0] && col === endIndex[1],
   isBlock,
   isVisited: false,
-  distance: 0,
+  distance: Infinity,
   previousNode: null,
 })
 

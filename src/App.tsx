@@ -3,6 +3,7 @@ import { getGrid, getNodeClassName, type Node } from './lib/nodeProcessor'
 import './App.css'
 import DFS from './lib/dfs'
 import BFS from './lib/bfs'
+import Dijkstra from './lib/Dijkstra'
 import { animateNodes, resetAnimate, type VisualizedNode } from './lib/animation'
 
 function App() {
@@ -37,6 +38,9 @@ function App() {
       case 'bfs':
         result = BFS(nodes, startNode, endNode)
         break
+      case 'dijkstra':
+        result = Dijkstra(nodes, startNode, endNode)
+        break
       default:
         result = initialVisualizedNode
     }
@@ -66,6 +70,9 @@ function App() {
       </button>
       <button onClick={() => findPath('bfs')} type="button">
         BFS GO
+      </button>
+      <button onClick={() => findPath('dijkstra')} type="button">
+        Dijkstra GO
       </button>
       <button onClick={() => resetNode()} type="button">
         Reset
