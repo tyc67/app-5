@@ -140,21 +140,27 @@ function App() {
 
   return (
     <>
-      <button onClick={() => findPath('dfs')} type="button">
-        DFS GO
-      </button>
-      <button onClick={() => findPath('bfs')} type="button">
-        BFS GO
-      </button>
-      <button onClick={() => findPath('dijkstra')} type="button">
-        Dijkstra GO
-      </button>
-      <button onClick={() => generateNewNodes('randomBlock')} type="button">
-        Generate
-      </button>
-      <button onClick={() => generateNewNodes('d-mode')} type="button">
-        D-mode
-      </button>
+      <div className="top-bar">
+        <div className="mode">
+          <button onClick={() => generateNewNodes('randomBlock')} type="button">
+            Mode 1
+          </button>
+          <button onClick={() => generateNewNodes('d-mode')} type="button">
+            Mode 2
+          </button>
+        </div>
+        <div className="method">
+          <button onClick={() => findPath('dfs')} type="button">
+            DFS GO
+          </button>
+          <button onClick={() => findPath('bfs')} type="button">
+            BFS GO
+          </button>
+          <button onClick={() => findPath('dijkstra')} type="button">
+            Dijkstra GO
+          </button>
+        </div>
+      </div>
       <div className="grid">
         {nodes.map((row, idx) => (
           <div key={idx} id={`row-${idx}`} className="grid-row">
