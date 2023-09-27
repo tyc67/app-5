@@ -1,6 +1,17 @@
 import { type Node } from './nodeProcessor'
 import { getNeighbors } from './neighborsNode'
 
+// const heap = Heap([start, 0])
+
+// while(heap.length) {
+
+//   const [node, dist] = heap.pop()
+//   for(const nei of getNeighbors(node)) {
+//     heap.push([nei, nei.cost + dist])
+//   }
+
+// }
+
 export default function Dijkstra(nodes: Node[][], startNode: Node, endNode: Node) {
   const visitedNodes: Node[] = []
   startNode.distance = 0
@@ -36,7 +47,12 @@ export default function Dijkstra(nodes: Node[][], startNode: Node, endNode: Node
     const neighbors = getNeighbors(currentNode, nodes)
     for (const neighbor of neighbors) {
       if (!neighbor.isVisited) {
-        const tentativeDistance = currentNode.distance + 1
+        let tentativeDistance = currentNode.distance
+        if (neighbor.opaque === 0) {
+          tentativeDistance = currentNode.distance + 1
+        } else {
+          tentativeDistance = currentNode.distance + neighbor.opaque
+        }
         if (tentativeDistance < neighbor.distance) {
           neighbor.distance = tentativeDistance
           neighbor.previousNode = currentNode

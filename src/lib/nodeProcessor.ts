@@ -3,25 +3,23 @@ export interface Node {
   col: number
   isStart: boolean
   isEnd: boolean
-  isBlock: boolean
+  opaque: number
   isVisited: boolean
+  isVisualized: boolean
+  isPath: boolean
   distance: number
   previousNode: unknown
 }
 
-export const getNode = (
-  row: number,
-  col: number,
-  startIndex: number[],
-  endIndex: number[],
-  isBlock: boolean
-): Node => ({
+export const getNode = (row: number, col: number, startIndex: number[], endIndex: number[], opaque: number): Node => ({
   row,
   col,
   isStart: row === startIndex[0] && col === startIndex[1],
   isEnd: row === endIndex[0] && col === endIndex[1],
-  isBlock,
+  opaque,
   isVisited: false,
+  isVisualized: false,
+  isPath: false,
   distance: Infinity,
   previousNode: null,
 })
@@ -29,7 +27,7 @@ export const getNode = (
 export const getGrid = (
   rowLength: number,
   colLength: number,
-  isRandomBlock: boolean,
+  option: string,
   startIndex: number[],
   endIndex: number[]
 ) => {
@@ -37,14 +35,20 @@ export const getGrid = (
   for (let row = 0; row < rowLength; row++) {
     const currentRow = []
     for (let col = 0; col < colLength; col++) {
-      if (isRandomBlock) {
-        let randomness = Math.random() ** 2 >= 0.5
-        if ((row === startIndex[0] && col === startIndex[1]) || (row === endIndex[0] && col === endIndex[1])) {
-          randomness = false
+      if (option === 'randomBlock') {
+        let opqaue = 0
+        if (Math.random() ** 2 >= 0.5) {
+          opqaue = 1
         }
-        currentRow.push(getNode(row, col, startIndex, endIndex, randomness))
+        if ((row === startIndex[0] && col === startIndex[1]) || (row === endIndex[0] && col === endIndex[1])) {
+          opqaue = 0
+        }
+        currentRow.push(getNode(row, col, startIndex, endIndex, opqaue))
+      } else if (option === 'd-mode') {
+        const opaque = Math.random()
+        currentRow.push(getNode(row, col, startIndex, endIndex, opaque))
       } else {
-        currentRow.push(getNode(row, col, startIndex, endIndex, false))
+        currentRow.push(getNode(row, col, startIndex, endIndex, 0))
       }
     }
     grid.push(currentRow)
@@ -54,13 +58,22 @@ export const getGrid = (
 
 export const getNodeClassName = (node: Node) => {
   switch (true) {
-    case node.isStart:
-      return 'start'
-    case node.isEnd:
-      return 'end'
-    case node.isBlock:
-      return 'block'
+    case node.isVisualized && !node.isPath:
+      return 'node visited'
+    case !node.isStart && !node.isEnd && node.isPath:
+      return 'node path'
     default:
-      return ''
+      return 'node'
+  }
+}
+
+export const getNodeColor = (node: Node) => {
+  switch (true) {
+    case node.isStart:
+      return { backgroundColor: `rgba(220, 38, 38, 0.8)` }
+    case node.isEnd:
+      return { backgroundColor: `rgba(16, 185, 129, 0.8)` }
+    default:
+      return { backgroundColor: `rgba(41, 37, 36, ${node.opaque})` }
   }
 }

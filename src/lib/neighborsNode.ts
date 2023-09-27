@@ -17,7 +17,7 @@ export const getNeighbors = (node: Node, grid: Node[][]) => {
     if (newRow >= 0 && newRow < grid.length && newCol >= 0 && newCol < grid[0].length) {
       const neighbor = grid[newRow][newCol]
 
-      if (!neighbor.isVisited && !neighbor.isBlock) {
+      if (!neighbor.isVisited && neighbor.opaque !== 1) {
         neighbors.push(neighbor)
       }
     }

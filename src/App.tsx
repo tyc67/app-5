@@ -1,33 +1,89 @@
 import { useState, useEffect } from 'react'
-import { getGrid, getNodeClassName, type Node } from './lib/nodeProcessor'
+import { getGrid, getNodeClassName, getNodeColor, type Node } from './lib/nodeProcessor'
 import './App.css'
 import DFS from './lib/dfs'
 import BFS from './lib/bfs'
 import Dijkstra from './lib/Dijkstra'
-import { animateNodes, resetAnimate, type VisualizedNode } from './lib/animation'
+
+interface VisualizedNode {
+  visitedNodes: Node[]
+  shortestPath: Node[]
+}
 
 function App() {
   const rowLength = 30
   const colLength = 40
-  const isRandomBlock = true
   const [startIndex, setStartIndex] = useState<number[]>([0, 0])
   const [endIndex, setEndIndex] = useState<number[]>([rowLength - 1, colLength - 1])
-  const initialNodes = getGrid(rowLength, colLength, isRandomBlock, startIndex, endIndex)
+  const initialNodes = getGrid(rowLength, colLength, 'randomBlock', startIndex, endIndex)
   const [nodes, setNodes] = useState<Node[][]>(initialNodes)
   const initialVisualizedNode = { visitedNodes: [], shortestPath: [] }
   const [visualizedNode, setVisualizedNode] = useState<VisualizedNode>(initialVisualizedNode)
+  const [isAnimating, setIsAnimating] = useState<boolean>(false)
 
   useEffect(() => {
-    animateNodes(visualizedNode)
-  }, [visualizedNode, visualizedNode.shortestPath, visualizedNode.visitedNodes])
+    if (!isAnimating) return
+    let visitedNodesInterval: NodeJS.Timeout
+    let shortestPathInterval: NodeJS.Timeout
+    const [shortestPath, visitedNodes] = [[...visualizedNode.shortestPath], [...visualizedNode.visitedNodes]]
+    const animateVisitedNodes = () => {
+      let idx = 0
+      visitedNodesInterval = setInterval(() => {
+        if (idx < visitedNodes.length) {
+          const node = visitedNodes[idx]
+          const updatedNodes = [...nodes]
+          if (!updatedNodes[node.row][node.col].isStart && !updatedNodes[node.row][node.col].isEnd) {
+            updatedNodes[node.row][node.col].isVisualized = true
+          }
+          setNodes(updatedNodes)
+          idx++
+          if (idx === visitedNodes.length) {
+            clearInterval(visitedNodesInterval)
+            animateShortestPath()
+          }
+        }
+      }, 16)
+    }
+    const animateShortestPath = () => {
+      let idx = 0
+      shortestPathInterval = setInterval(() => {
+        if (idx < shortestPath.length) {
+          const node = shortestPath[idx]
+          const updatedNodes = [...nodes]
+          updatedNodes[node.row][node.col].isPath = true
+          setNodes(updatedNodes)
+          idx++
+          if (idx === shortestPath.length) {
+            clearInterval(shortestPathInterval)
+            setIsAnimating(false)
+          }
+        } else {
+          clearInterval(shortestPathInterval)
+          setIsAnimating(false)
+        }
+      }, 16)
+    }
+    animateVisitedNodes()
+
+    return () => {
+      clearInterval(visitedNodesInterval)
+      clearInterval(shortestPathInterval)
+      setIsAnimating(false)
+    }
+  }, [isAnimating])
 
   const handleMouseDown = (selectRow: number, selectCol: number) => {
     const updatedNodes = [...nodes]
-    updatedNodes[selectRow][selectCol].isBlock = !updatedNodes[selectRow][selectCol].isBlock
+    if (updatedNodes[selectRow][selectCol].opaque === 1) {
+      updatedNodes[selectRow][selectCol].opaque = 0
+    } else if (updatedNodes[selectRow][selectCol].opaque === 0) {
+      updatedNodes[selectRow][selectCol].opaque = 1
+    }
     setNodes(updatedNodes)
   }
 
   const findPath = (method: string) => {
+    if (isAnimating) return
     const startNode = nodes[startIndex[0]][startIndex[1]]
     const endNode = nodes[endIndex[0]][endIndex[1]]
     let result: VisualizedNode
@@ -44,24 +100,43 @@ function App() {
       default:
         result = initialVisualizedNode
     }
+    resetVisualizedNode(nodes)
     setVisualizedNode(result)
+    setIsAnimating(true)
   }
 
-  const resetNode = () => {
+  const resetVisualizedNode = (nodes: Node[][]) => {
+    const updatedNodes = [...nodes]
+    updatedNodes.forEach((row) => {
+      row.forEach((node) => {
+        node.isVisited = false
+        node.isVisualized = false
+        node.isPath = false
+      })
+    })
+
+    setNodes(updatedNodes)
+    setVisualizedNode(initialVisualizedNode)
+  }
+
+  const generateNewNodes = (mode: string) => {
+    if (isAnimating) return
     const newStartIndex = [Math.floor(Math.random() * rowLength), Math.floor(Math.random() * colLength)]
     const newEndIndex = [Math.floor(Math.random() * rowLength), Math.floor(Math.random() * colLength)]
-    const newNodes = getGrid(rowLength, colLength, isRandomBlock, newStartIndex, newEndIndex)
+
+    let newNodes: Node[][]
+
+    if (mode === 'randomBlock' || mode === 'd-mode') {
+      newNodes = getGrid(rowLength, colLength, mode, newStartIndex, newEndIndex)
+    } else {
+      newNodes = nodes
+    }
 
     setStartIndex(newStartIndex)
     setEndIndex(newEndIndex)
     setNodes(newNodes)
-    resetAnimate(visualizedNode)
     setVisualizedNode(initialVisualizedNode)
-    //TODO: need fix reset visualize bugs
   }
-
-  console.log(nodes)
-  console.log(visualizedNode)
 
   return (
     <>
@@ -74,20 +149,25 @@ function App() {
       <button onClick={() => findPath('dijkstra')} type="button">
         Dijkstra GO
       </button>
-      <button onClick={() => resetNode()} type="button">
-        Reset
+      <button onClick={() => generateNewNodes('randomBlock')} type="button">
+        Generate
       </button>
-      <div className="board">
+      <button onClick={() => generateNewNodes('d-mode')} type="button">
+        D-mode
+      </button>
+      <div className="grid">
         {nodes.map((row, idx) => (
-          <div key={idx}>
+          <div key={idx} id={`row-${idx}`} className="grid-row">
             {row.map((node, idx) => {
               const extra = getNodeClassName(node)
+              const nodeColor = getNodeColor(node)
               return (
                 <div
                   key={idx}
                   id={`node-${node.row}-${node.col}`}
-                  className={`node ${extra}`}
+                  className={extra}
                   onMouseDown={() => handleMouseDown(node.row, node.col)}
+                  style={nodeColor}
                 ></div>
               )
             })}
