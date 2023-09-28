@@ -11,6 +11,8 @@ export interface Node {
   previousNode: unknown
 }
 
+export type MatrixMode = 'block-mode' | 'diverse-mode'
+
 export const getNode = (row: number, col: number, startIndex: number[], endIndex: number[], opaque: number): Node => ({
   row,
   col,
@@ -27,7 +29,7 @@ export const getNode = (row: number, col: number, startIndex: number[], endIndex
 export const getGrid = (
   rowLength: number,
   colLength: number,
-  option: string,
+  option: MatrixMode,
   startIndex: number[],
   endIndex: number[]
 ) => {
@@ -35,7 +37,7 @@ export const getGrid = (
   for (let row = 0; row < rowLength; row++) {
     const currentRow = []
     for (let col = 0; col < colLength; col++) {
-      if (option === 'randomBlock') {
+      if (option === 'block-mode') {
         let opqaue = 0
         if (Math.random() ** 2 >= 0.5) {
           opqaue = 1
@@ -44,7 +46,7 @@ export const getGrid = (
           opqaue = 0
         }
         currentRow.push(getNode(row, col, startIndex, endIndex, opqaue))
-      } else if (option === 'd-mode') {
+      } else if (option === 'diverse-mode') {
         const opaque = Math.random()
         currentRow.push(getNode(row, col, startIndex, endIndex, opaque))
       } else {

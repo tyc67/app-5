@@ -16,6 +16,7 @@
 
 .method {
   margin: 0;
+  padding-top: 4px;
 }
 
 .grid {
@@ -23,7 +24,7 @@
   margin: 0;
   background: #ffffff;
   display: grid;
-  grid-template-rows: repeat(30, minmax(24px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(9px, 1fr));
   gap: 0.5px;
 }
 
@@ -33,23 +34,30 @@
 }
 
 .node {
-  width: 24px;
-  height: 24px;
   outline: 0.5px solid #374151;
   transition: all 0.3s linear;
 }
 
-/* .start {
-  background-color: rgb(220, 38, 38, 0.8);
+@media (max-width: 767px) {
+  .node {
+    width: 9px;
+    height: 9px;
+  }
 }
 
-.end {
-  background-color: rgb(16, 185, 129, 0.8);
+@media (min-width: 768px) and (max-width: 1024px) {
+  .node {
+    width: 18px;
+    height: 18px;
+  }
 }
 
-.block {
-  background-color: #292524;
-} */
+@media (min-width: 1024px) {
+  .node {
+    width: 24px;
+    height: 24px;
+  }
+}
 
 .visited {
   animation-name: visitedAnimation;

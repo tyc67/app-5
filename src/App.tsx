@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
-import { getGrid, getNodeClassName, getNodeColor, type Node } from './lib/nodeProcessor'
+import { getGrid, type Node, MatrixMode } from './lib/nodeProcessor'
 import './App.css'
 import DFS from './lib/dfs'
 import BFS from './lib/bfs'
 import Dijkstra from './lib/Dijkstra'
+import ModeButton from './components/ModeButton'
+import MethodButton from './components/MethodButton'
+import Matrix from './components/Matrix'
 
 interface VisualizedNode {
   visitedNodes: Node[]
@@ -15,11 +18,12 @@ function App() {
   const colLength = 40
   const [startIndex, setStartIndex] = useState<number[]>([0, 0])
   const [endIndex, setEndIndex] = useState<number[]>([rowLength - 1, colLength - 1])
-  const initialNodes = getGrid(rowLength, colLength, 'randomBlock', startIndex, endIndex)
+  const initialNodes = getGrid(rowLength, colLength, 'block-mode', startIndex, endIndex)
   const [nodes, setNodes] = useState<Node[][]>(initialNodes)
   const initialVisualizedNode = { visitedNodes: [], shortestPath: [] }
   const [visualizedNode, setVisualizedNode] = useState<VisualizedNode>(initialVisualizedNode)
   const [isAnimating, setIsAnimating] = useState<boolean>(false)
+  const [matrixMode, setMatrixMode] = useState<MatrixMode>('block-mode')
 
   useEffect(() => {
     if (!isAnimating) return
@@ -114,24 +118,23 @@ function App() {
         node.isPath = false
       })
     })
-
     setNodes(updatedNodes)
     setVisualizedNode(initialVisualizedNode)
   }
 
-  const generateNewNodes = (mode: string) => {
+  const handleMatrixMode = (mode: MatrixMode) => {
     if (isAnimating) return
     const newStartIndex = [Math.floor(Math.random() * rowLength), Math.floor(Math.random() * colLength)]
     const newEndIndex = [Math.floor(Math.random() * rowLength), Math.floor(Math.random() * colLength)]
 
     let newNodes: Node[][]
 
-    if (mode === 'randomBlock' || mode === 'd-mode') {
+    if (mode === 'block-mode' || mode === 'diverse-mode') {
       newNodes = getGrid(rowLength, colLength, mode, newStartIndex, newEndIndex)
     } else {
       newNodes = nodes
     }
-
+    setMatrixMode(mode)
     setStartIndex(newStartIndex)
     setEndIndex(newEndIndex)
     setNodes(newNodes)
@@ -142,44 +145,26 @@ function App() {
     <>
       <div className="top-bar">
         <div className="mode">
-          <button onClick={() => generateNewNodes('randomBlock')} type="button">
+          <ModeButton
+            onClick={() => handleMatrixMode('block-mode')}
+            isCurrentMode={matrixMode === 'block-mode' ? true : false}
+          >
             Mode 1
-          </button>
-          <button onClick={() => generateNewNodes('d-mode')} type="button">
+          </ModeButton>
+          <ModeButton
+            onClick={() => handleMatrixMode('diverse-mode')}
+            isCurrentMode={matrixMode === 'diverse-mode' ? true : false}
+          >
             Mode 2
-          </button>
+          </ModeButton>
         </div>
         <div className="method">
-          <button onClick={() => findPath('dfs')} type="button">
-            DFS GO
-          </button>
-          <button onClick={() => findPath('bfs')} type="button">
-            BFS GO
-          </button>
-          <button onClick={() => findPath('dijkstra')} type="button">
-            Dijkstra GO
-          </button>
+          <MethodButton onClick={() => findPath('dfs')}>DFS</MethodButton>
+          <MethodButton onClick={() => findPath('bfs')}>BFS</MethodButton>
+          <MethodButton onClick={() => findPath('dijkstra')}>Dijkstra</MethodButton>
         </div>
       </div>
-      <div className="grid">
-        {nodes.map((row, idx) => (
-          <div key={idx} id={`row-${idx}`} className="grid-row">
-            {row.map((node, idx) => {
-              const extra = getNodeClassName(node)
-              const nodeColor = getNodeColor(node)
-              return (
-                <div
-                  key={idx}
-                  id={`node-${node.row}-${node.col}`}
-                  className={extra}
-                  onMouseDown={() => handleMouseDown(node.row, node.col)}
-                  style={nodeColor}
-                ></div>
-              )
-            })}
-          </div>
-        ))}
-      </div>
+      <Matrix nodes={nodes} handleMouseDown={handleMouseDown} />
     </>
   )
 }
