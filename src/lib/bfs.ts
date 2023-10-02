@@ -25,7 +25,7 @@ export default function BFS(nodes: Node[][], startNode: Node, endNode: Node) {
   const queue: Node[] = []
   const visitedNodes = []
   const shortestPath: Node[] = []
-
+  startNode.distance = 0
   queue.push(startNode)
   while (queue.length > 0) {
     const currentNode = queue.shift()
@@ -33,22 +33,27 @@ export default function BFS(nodes: Node[][], startNode: Node, endNode: Node) {
       currentNode.isVisited = true
       visitedNodes.push(currentNode)
       if (currentNode === endNode) {
-        let pathNode = endNode
-        shortestPath.push(endNode)
+        let pathNode = currentNode
+        shortestPath.push(currentNode)
         while (pathNode !== startNode) {
-          pathNode = pathNode.previousNode as Node
           shortestPath.unshift(pathNode)
+          pathNode = pathNode.previousNode as Node
+          // shortestPath.sort((a,b)=>a.distance-b.distance)
         }
-
-        return { visitedNodes, shortestPath }
+        break
       }
 
       const neighbors = getNeighbors(currentNode, nodes)
       for (const neighbor of neighbors) {
         if (!neighbor.isVisited && !queue.includes(neighbor)) {
           queue.push(neighbor)
-          neighbor.distance = currentNode.distance + 1
+          // neighbor.distance = currentNode.distance + neighbor.opaque
           neighbor.previousNode = currentNode
+          //   const tentativeDistance = currentNode.distance + neighbor.opaque
+          //   if (tentativeDistance < neighbor.distance) {
+          //     neighbor.distance = tentativeDistance
+          //     neighbor.previousNode = currentNode
+          //   }
         }
       }
     }
