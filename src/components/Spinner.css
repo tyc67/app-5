@@ -1,0 +1,37 @@
+.spinner-sm {
+  animation: spin 1s linear infinite;
+  height: 14px;
+  width: 14px;
+  color: #6b7280;
+}
+
+.spinner-md {
+  animation: spin 1s linear infinite;
+  height: 24px;
+  width: 24px;
+  color: #6b7280;
+}
+
+.spinner-lg {
+  animation: spin 1s linear infinite;
+  height: 32px;
+  width: 32px;
+  color: #6b7280;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.opacity-25 {
+  opacity: 0.25;
+}
+
+.opacity-75 {
+  opacity: 0.75;
+}

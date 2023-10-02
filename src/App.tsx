@@ -4,14 +4,16 @@ import './App.css'
 import DFS from './lib/dfs'
 import BFS from './lib/bfs'
 import Dijkstra from './lib/Dijkstra'
-import ModeButton from './components/ModeButton'
-import MethodButton from './components/MethodButton'
 import Matrix from './components/Matrix'
+import MethodBar from './components/MethodBar'
+import ModeBar from './components/ModeBar'
 
 interface VisualizedNode {
   visitedNodes: Node[]
   shortestPath: Node[]
 }
+
+export type MethodOption = 'DFS' | 'BFS' | 'Dijkstra'
 
 function App() {
   const rowLength = 30
@@ -51,6 +53,11 @@ function App() {
     const animateShortestPath = () => {
       let idx = 0
       shortestPathInterval = setInterval(() => {
+        if (matrixMode === 'diverse-mode') {
+          const resetNodes = [...nodes]
+          visitedNodes.forEach((node) => (resetNodes[node.row][node.col].isVisualized = false))
+          setNodes(resetNodes)
+        }
         if (idx < shortestPath.length) {
           const node = shortestPath[idx]
           const updatedNodes = [...nodes]
@@ -77,6 +84,7 @@ function App() {
   }, [isAnimating])
 
   const handleMouseDown = (selectRow: number, selectCol: number) => {
+    if (isAnimating) return
     const updatedNodes = [...nodes]
     if (updatedNodes[selectRow][selectCol].opaque === 1) {
       updatedNodes[selectRow][selectCol].opaque = 0
@@ -86,19 +94,19 @@ function App() {
     setNodes(updatedNodes)
   }
 
-  const findPath = (method: string) => {
+  const findPath = (method: MethodOption) => {
     if (isAnimating) return
     const startNode = nodes[startIndex[0]][startIndex[1]]
     const endNode = nodes[endIndex[0]][endIndex[1]]
     let result: VisualizedNode
     switch (method) {
-      case 'dfs':
+      case 'DFS':
         result = DFS(nodes, startNode, endNode)
         break
-      case 'bfs':
+      case 'BFS':
         result = BFS(nodes, startNode, endNode)
         break
-      case 'dijkstra':
+      case 'Dijkstra':
         result = Dijkstra(nodes, startNode, endNode)
         break
       default:
@@ -116,6 +124,8 @@ function App() {
         node.isVisited = false
         node.isVisualized = false
         node.isPath = false
+        node.distance = Infinity
+        node.previousNode = null
       })
     })
     setNodes(updatedNodes)
@@ -144,25 +154,8 @@ function App() {
   return (
     <>
       <div className="top-bar">
-        <div className="mode">
-          <ModeButton
-            onClick={() => handleMatrixMode('block-mode')}
-            isCurrentMode={matrixMode === 'block-mode' ? true : false}
-          >
-            Mode 1
-          </ModeButton>
-          <ModeButton
-            onClick={() => handleMatrixMode('diverse-mode')}
-            isCurrentMode={matrixMode === 'diverse-mode' ? true : false}
-          >
-            Mode 2
-          </ModeButton>
-        </div>
-        <div className="method">
-          <MethodButton onClick={() => findPath('dfs')}>DFS</MethodButton>
-          <MethodButton onClick={() => findPath('bfs')}>BFS</MethodButton>
-          <MethodButton onClick={() => findPath('dijkstra')}>Dijkstra</MethodButton>
-        </div>
+        <ModeBar matrixMode={matrixMode} onClick={handleMatrixMode} />
+        <MethodBar matrixMode={matrixMode} onClick={findPath} isAnimating={isAnimating} />
       </div>
       <Matrix nodes={nodes} handleMouseDown={handleMouseDown} />
     </>
