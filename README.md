@@ -1,28 +1,39 @@
-# React + TypeScript + Vite
+# maze explorer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Maze Explorer is an algorithm-driven application designed to navigate and solve complex mazes, empowering users to find the shortest route out of any labyrinthine puzzle.
 
-Currently, two official plugins are available:
+## Demo
+[Demo Link](https://your-username.github.io/react-vite-serverless)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
+- Modern React development environment powered by Vite.
+- Responsive design for various screen sizes.
+- Easily deployable to GitHub Pages or any static hosting service.
+ 
+## Technologies and Tools
+- **Frontend**: React, Vite
+- **Backend**: Node.js
+- **Development Tools**: npm, Jest, ESLint, Prettier
+- **Hosting**: GitHub Pages
 
-## Expanding the ESLint configuration
+## Roadmap
+Our future development plans for Maze Explorer include:
+- Adding support for more maze types.
+- Enhancing the user interface for a better user experience.
+- Implementing real-time multiplayer maze solving.
+- Create a developer-friendly API with endpoints for maze generation, solving, and customization.
+## Getting Started
+### Prerequisites
+Before you start, make sure you have Node.js and npm installed on your machine. You can download and install Node.js from [here](https://nodejs.org/).
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+To check if you have Node.js and npm installed, run the following commands in your terminal:
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
+```bash
+node -v
+npm -v
 ```
+Install project dependencies:
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
-# app-5
+```bash
+npm install
+```
