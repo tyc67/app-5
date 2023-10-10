@@ -12,7 +12,7 @@ interface MethodBarProps {
 
 export default function MethodBar({ matrixMode, onClick, isAnimating }: MethodBarProps) {
   const methodsForBlockMode: MethodOption[] = ['DFS', 'BFS', 'Dijkstra']
-  const methodsForDiverseMode: MethodOption[] = ['BFS', 'Dijkstra']
+  const methodsForDiverseMode: MethodOption[] = ['Dijkstra']
   const methods = matrixMode === 'block-mode' ? methodsForBlockMode : methodsForDiverseMode
   const [activeMethod, setActiveMethod] = useState<MethodOption | null>(null)
 
