@@ -3,12 +3,24 @@
 Maze Explorer is an algorithm-driven application designed to navigate and solve complex mazes, empowering users to find the shortest route out of any labyrinthine puzzle.
 
 ## Demo
-[Demo Link](https://your-username.github.io/react-vite-serverless)
+### DFS
+
+https://github.com/tyc67/maze-explorer/assets/114332515/5093527d-f6a5-45cf-9c0e-ab305a44c12f
+
+### BFS
+
+https://github.com/tyc67/maze-explorer/assets/114332515/1087ea4d-6a3a-4ede-84ce-0328f4cd2599
+
+### Dijkstra
+
+https://github.com/tyc67/maze-explorer/assets/114332515/baf9fa64-8eaf-4574-a5b6-9b4b286479c0
 
 ## Features
 - Modern React development environment powered by Vite.
+- Utilizes CSS animations to visualize pathfinding algorithms in action.
 - Responsive design for various screen sizes.
 - Easily deployable to GitHub Pages or any static hosting service.
+
  
 ## Technologies and Tools
 - **Frontend**: React, Vite
